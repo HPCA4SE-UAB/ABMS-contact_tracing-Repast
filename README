@@ -1,0 +1,80 @@
+Name:-         	Contact-Tracing-Repast
+Authors:-      	Andreu Moreno Vendrell (amoreno@euss.cat, andreu.moreno@uab.cat)
+				Josep Jorba (josep.jorba@uab.cat)
+				Anna Sikora (anna.sikora@uab.cat)
+ 				Eduardo César (eduardo.cesar@uab.cat)
+Copyright (c) 2021 Universitat Autònoma de Barcelona, Escola Universitària Salesiana de Sarrià
+Date:-         	July 2021
+
+Based on Contact Tracing agent model of PANDORA ABMS
+
+(1) INTRODUCTION
+-----------------
+
+....
+
+(2) REQUIRED 
+--------------------
+- Open MPI 1.10.2
+- TAU 2.26.3
+- Repast HPC 2.3.0  (https://repast.github.io/repast_hpc.html)
+
+(3) USAGE (Unix/Linux)
+-----------------------------
+1. Model parameter selection
+
+	Modify work/props/model.props.
+
+2. Model compilation
+
+	-Go to work directory
+	cd work
+
+	-(Adapt following lines to your environment)
+
+    module swap PrgEnv-cray PrgEnv-gnu
+    module load boost/1.71.0-gcc-8.3.0
+    module load alps
+    export CXX=CC
+    export CC=cc
+    export FC=ftn
+
+        export PATH=/cfs/nobackup/c/cesaar/sfw/tau-2.29.1/craycnl/bin/:$PATH
+        export TAU_MAKEFILE=/cfs/nobackup/c/cesaar/sfw/tau-2.29.1/craycnl/lib/Makefile.tau-gnu-mpi-pdt
+        export TAU_COMM_MATRIX=1
+
+    export LD_LIBRARY_PATH=/cfs/nobackup/c/cesaar/sfw/lib/:/cfs/nobackup/c/cesaar/sfw/tau-2.29.1/craycnl/lib/:$LD_LIBRARY_PATH
+
+	-run ./autoconf
+
+    -run ./configure with your paths
+
+    Example with TAU:
+    ./configure --with-tau --with-repast=/cfs/nobackup/c/cesaar/sfw   --with-boost-libdir=/pdc/vol/boost/1.71.0-gcc-8.3.0/lib --with-boost-incdir=/pdc/vol/boost/1.71.0-gcc-8.3.0/include --with-openmpi-libdir=/opt/cray/pe/mpt/7.7.14/gni/mpich-gnu/8.1/lib
+
+    Example without TAU:
+    ./configure --with-repast=/cfs/nobackup/c/cesaar/sfw  --with-boost-libdir=/pdc/vol/boost/1.71.0-gcc-8.3.0/lib --with-boost-incdir=/pdc/vol/boost/1.71.0-gcc-8.3.0/include  --with-openmpi-libdir=/opt/cray/pe/mpt/7.7.14/gni/mpich-gnu/8.1/lib
+
+	-run make to compile
+
+
+
+4. Model execution
+
+	-Scripts sample is provided slurm_script_samples directory for SLURM 
+	sbatch ModelRepast.sh 
+
+5. Getting results
+
+        -To get agents distribution
+        ./PreprocessAgentsDistribution output/sortida.txt 
+        Rscript GenerationAgentsDistribution.R
+
+(4) LICENSE (GPL):
+-------------
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ 
+You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+

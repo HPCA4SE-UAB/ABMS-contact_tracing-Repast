@@ -1,0 +1,40 @@
+#********************************************************
+# global options
+#********************************************************
+SHELL=/bin/sh
+PREFIX=.
+ARCH=@ARCH@
+ARC=@ARCH@
+LDFLAGS=-L/opt/cray/pe/mpt/7.7.14/gni/mpich-gnu/8.1/lib/ -L/cfs/nobackup/c/cesaar/sfw/lib/ -L/pdc/vol/boost/1.71.0-gcc-8.3.0/lib/ -L/cfs/nobackup/c/cesaar/sfw/lib/  -g 
+CXXFLAGS=-I/cfs/nobackup/c/cesaar/sfw/include/ -I/pdc/vol/boost/1.71.0-gcc-8.3.0/include/ -I/cfs/nobackup/c/cesaar/sfw/include/ -g
+
+# Destinations for library and executable installation (relative to src directory)
+GCC=cc
+GXX=CC
+
+LIBRARY_DEST=./lib
+PROGRAMS_DEST=./bin
+
+#MPICXX=tau_cxx.sh -std=c++11
+MPICXX=CC -std=c++11
+MAKE=make
+LINKER=ld
+MV=mv
+CP=cp
+RM=rm -f
+MKDIR=mkdir -p
+
+#********************************************************
+# configuration and dependencies                *
+#********************************************************
+BOOST_INC_DIR=/pdc/vol/boost/1.71.0-gcc-8.3.0/include/
+BOOST_LIB_DIR=/pdc/vol/boost/1.71.0-gcc-8.3.0/lib/
+OPENMPI_LIB_DIR=/opt/cray/pe/mpt/7.7.14/gni/mpich-gnu/8.1/lib/
+
+REPAST_INC_DIR=/cfs/nobackup/c/cesaar/sfw/include/
+REPAST_LIB_DIR=/cfs/nobackup/c/cesaar/sfw/lib/
+
+REPAST_LIB=-lrepast_hpc-2.3.0
+BOOST_LIBS=-lboost_mpi -lboost_serialization -lboost_system -lboost_filesystem -lmpich -lmpichcxx -lstdc++
+
+REPAST_HPC_DEFINES=

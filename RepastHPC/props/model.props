@@ -1,0 +1,32 @@
+#Properties file 100 steps
+stop.at = 100
+random.seed = 1
+
+# these must multiply to total number of processes
+proc.per.x = 8
+proc.per.y = 4
+
+#Contact_tracing_props
+encounter.radious = 2 
+
+# size.width must be multiple of proc.per.x
+# size.height must be multiple of proc.per.y
+size.width = 16 
+size.height = 100
+
+Walker.walkerRate = 3 
+Walker.drifting = 0.09 
+Walker.stopping = 0.02 
+Walker.stopTime = 900 
+Walker.speed = 1 
+Walker.initialDensity = 0.25
+
+Epidemiology.infectiousness = 0.00371 
+Epidemiology.infectoinRadius = 2 
+Epidemiology.sickRate = 0.3 
+Epidemiology.encounterRadius = 2 
+
+Phone.signalRadius = 3 
+Phone.applicationRate = 1.0 
+Phone.phoneThreshold1 = 63 
+Phone.phoneThreshold2 = 74
