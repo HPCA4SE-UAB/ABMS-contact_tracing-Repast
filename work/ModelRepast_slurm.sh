@@ -9,7 +9,7 @@
 #SBATCH -J Repast
 
 # Only 1 hour wall-clock time will be given to this job
-#SBATCH -t 00:10:00
+#SBATCH -t 00:20:00
 
 # Number of nodes
 #SBATCH --nodes=1
