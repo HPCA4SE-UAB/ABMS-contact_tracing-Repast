@@ -529,7 +529,7 @@ void RepastHPCModel::doSomething(){
 			int _stopTime = repast::Random::instance()->nextDouble() * stopTime;
 			float _speed = 0.2 * (2 * repast::Random::instance()->nextDouble() - 1) + speed;
 			bool _hasApp = repast::Random::instance()->nextDouble() < applicationRate;
-			bool _directionTop;
+			bool _directionTop = false;
 
 			//Get an empty position in the topLimit 
 
@@ -574,7 +574,7 @@ void RepastHPCModel::doSomething(){
 			int _stopTime = repast::Random::instance()->nextDouble() * stopTime;
 			float _speed = 0.2 * (2 * repast::Random::instance()->nextDouble() - 1) + speed;
 			bool _hasApp = repast::Random::instance()->nextDouble() < applicationRate;
-			bool _directionTop;
+			bool _directionTop = true;
 
 			//Get an empty position in the botLimit 
 
