@@ -6,6 +6,6 @@ if [ "$#" -ne 1 ]; then
 fi
 
 # create file with agents coordinates
-cat $1 | grep "T(100)" | awk -F "[" '{print $2 $4}' | tr --delete , | tr --delete ] > node-100.data
+cat $1 | grep "T(3600)" | awk -F "[" '{print $2 $4}' | tr --delete , | tr --delete ] > agents_coordinates.data
 
 
