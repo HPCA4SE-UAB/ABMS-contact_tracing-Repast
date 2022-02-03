@@ -1,4 +1,4 @@
-df <- read.table("node-100.data")
+df <- read.table("agents_coordinates.data")
 
 require(ggplot2)
 
