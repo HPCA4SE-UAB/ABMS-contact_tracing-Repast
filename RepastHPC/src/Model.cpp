@@ -512,11 +512,11 @@ void RepastHPCModel::doSomething(){
 	// New agents
 	agentsToAdd = discreteSpace->dimensions().extents().getX() * initialDensity;
 
-
     float xmin = discreteSpace->dimensions().origin().getX();
     float ymin = discreteSpace->dimensions().origin().getY();
     float xmax = discreteSpace->dimensions().origin().getX() + discreteSpace->dimensions().extents().getX();
     float ymax = discreteSpace->dimensions().origin().getY() + discreteSpace->dimensions().extents().getY();
+
 
 	//Are we TOP?
 	if (ymax == HEIGHT){
@@ -546,7 +546,6 @@ void RepastHPCModel::doSomething(){
 			if (j >= maxPositionsToLookForward) continue;
 
 			initialLocation = topLimit[randIndex];
-			_directionTop = false;            
 
 			repast::AgentId id(countOfAgents, rank, 0);
 			id.currentRank(rank);
@@ -591,7 +590,6 @@ void RepastHPCModel::doSomething(){
 			if (j >= maxPositionsToLookForward) continue;
 
 			initialLocation = botLimit[randIndex];
-			_directionTop = false;            
 
 			repast::AgentId id(countOfAgents, rank, 0);
 			id.currentRank(rank);
