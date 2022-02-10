@@ -3,7 +3,7 @@ stop.at = 3600
 random.seed = 1
 
 # these must multiply to total number of processes
-proc.per.x = 4
+proc.per.x = 8
 proc.per.y = 8
 
 #Contact_tracing_props
@@ -11,8 +11,8 @@ encounter.radious = 2
 
 # size.width must be multiple of proc.per.x
 # size.height must be multiple of proc.per.y
-size.width = 20 
-size.height = 1200
+size.width = 32 
+size.height = 1024
 
 Walker.walkerRate = 3 
 Walker.drifting = 0.09 
