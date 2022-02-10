@@ -510,16 +510,24 @@ void RepastHPCModel::doSomething(){
 
 
 	// New agents
-	agentsToAdd = discreteSpace->dimensions().extents().getX() * initialDensity;
+	float stepRatioCreationAgents = (1.0*procPerx/(WIDTH*initialDensity));
 
-    float xmin = discreteSpace->dimensions().origin().getX();
-    float ymin = discreteSpace->dimensions().origin().getY();
-    float xmax = discreteSpace->dimensions().origin().getX() + discreteSpace->dimensions().extents().getX();
-    float ymax = discreteSpace->dimensions().origin().getY() + discreteSpace->dimensions().extents().getY();
+	agentsToAdd = 0;
+	if (stepRatioCreationAgents >= 1){
+		if (repast::Random::instance()->nextDouble() < (1/stepRatioCreationAgents))
+                	agentsToAdd = 1;
+	}else{
+		agentsToAdd = 1/stepRatioCreationAgents;
+	}
+
+	float xmin = discreteSpace->dimensions().origin().getX();
+	float ymin = discreteSpace->dimensions().origin().getY();
+	float xmax = discreteSpace->dimensions().origin().getX() + discreteSpace->dimensions().extents().getX();
+	float ymax = discreteSpace->dimensions().origin().getY() + discreteSpace->dimensions().extents().getY();
 
 
 	//Are we TOP?
-	if (ymax == HEIGHT){
+	if ((agentsToAdd > 0) && (ymax == HEIGHT)){
 		for (int i = 0; i < agentsToAdd; i++){
 			bool _sick = false;
 			if (repast::Random::instance()->nextDouble() < sickRate) _sick = true;
@@ -562,7 +570,7 @@ void RepastHPCModel::doSomething(){
 	}
 
 	//Are we BOTTON?
-	if (ymin == 0){
+	if ((agentsToAdd > 0) && (ymin == 0)){
 
 		for (int i = 0; i < agentsToAdd; i++){
 			bool _sick = false;
