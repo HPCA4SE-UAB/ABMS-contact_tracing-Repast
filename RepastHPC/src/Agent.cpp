@@ -755,19 +755,25 @@ void RepastHPCAgent::infect(repast::SharedContext<RepastHPCAgent>* context,
  * returns: true: die 
  */
 bool RepastHPCAgent::move(repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space){
-    std::vector<int> agentLoc;
-    std::vector<int> agentNewLoc;
+	std::vector<int> agentLoc;
+	std::vector<int> agentNewLoc;
 	int maxPositionsToLookForward = 3, i = 0;//TODO maxPositionsToLookForward com a paràmetre?
 
-    if (repast::Random::instance()->nextDouble() < getStopping()) {
-        setStopCount((int) getStopTime() * repast::Random::instance()->nextDouble());
+    
+	if (getStopCounter() > 0){ //I amb stoped
+		setStopCount(getStopCounter() - 1);
 		return false;
-    }
-    else {
-		space->getLocation(id_, agentLoc);
-    	int modX = 0;
-    	int modY = 0;
-    	if (directionTop()) modY = 1;
+	}
+
+	if (repast::Random::instance()->nextDouble() < getStopping()) {
+		setStopCount((int) getStopTime() * repast::Random::instance()->nextDouble());
+		return false;
+	}
+	else {
+	space->getLocation(id_, agentLoc);
+	int modX = 0;
+	int modY = 0;
+	if (directionTop()) modY = 1;
     	else modY = -1;
 		do{
        		if (repast::Random::instance()->nextDouble() < getDrifting()) {
