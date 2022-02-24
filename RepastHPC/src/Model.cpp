@@ -475,7 +475,7 @@ void RepastHPCModel::doSomething(){
 	int whichRank = 0; 
 	bool dierequest = false, reproductionrequest = false;
 	int i; // a counter
-	int maxPositionsToLookForward = 3, j = 0;//TODO maxPositionsToLookForward com a paràmetre?
+	int maxPositionsToLookForward = 0, j = 0;//TODO maxPositionsToLookForward com a paràmetre?
 
 	int rank = repast::RepastProcess::instance()->rank();
 
@@ -510,7 +510,7 @@ void RepastHPCModel::doSomething(){
 
 
 	// New agents
-	float stepRatioCreationAgents = (1.0*procPerx/(WIDTH*initialDensity));
+	float stepRatioCreationAgents = (2.0*procPerx/(WIDTH*initialDensity));
 
 	agentsToAdd = 0;
 	if (stepRatioCreationAgents >= 1){
@@ -565,7 +565,8 @@ void RepastHPCModel::doSomething(){
 			discreteSpace->moveTo(id, initialLocation);
 			countOfAgents++;
 
-			std::cout << "Agent to add: " << id << " " << initialLocation << std::endl;
+			std::cout << "Agent to add TOP: " << id << " " << initialLocation << " TICK: " << repast::RepastProcess::instance()->getScheduleRunner().currentTick() << std::endl;
+
    		}
 	}
 
@@ -661,8 +662,8 @@ void RepastHPCModel::initSchedule(repast::ScheduleRunner& runner){
 	runner.scheduleEvent(10.6, 10, repast::Schedule::FunctorPtr(new repast::MethodFunctor<repast::DataSet>(agentValues, &repast::DataSet::write)));
 	runner.scheduleEndEvent(repast::Schedule::FunctorPtr(new repast::MethodFunctor<repast::DataSet>(agentValues, &repast::DataSet::record)));
 	runner.scheduleEndEvent(repast::Schedule::FunctorPtr(new repast::MethodFunctor<repast::DataSet>(agentValues, &repast::DataSet::write)));
-	//runner.scheduleEvent(3, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
-	//runner.scheduleEvent(50, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
+	runner.scheduleEvent(10, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
+	runner.scheduleEvent(1800, repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
 	runner.scheduleEndEvent(repast::Schedule::FunctorPtr(new repast::MethodFunctor<RepastHPCModel> (this, &RepastHPCModel::printAgentsPosition)));
 }
 
