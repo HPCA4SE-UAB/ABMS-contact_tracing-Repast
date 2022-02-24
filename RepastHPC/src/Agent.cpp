@@ -757,8 +757,6 @@ void RepastHPCAgent::infect(repast::SharedContext<RepastHPCAgent>* context,
 bool RepastHPCAgent::move(repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space){
 	std::vector<int> agentLoc;
 	std::vector<int> agentNewLoc;
-	int maxPositionsToLookForward = 3, i = 0;//TODO maxPositionsToLookForward com a paràmetre?
-
     
 	if (getStopCounter() > 0){ //I amb stoped
 		setStopCount(getStopCounter() - 1);
@@ -775,29 +773,38 @@ bool RepastHPCAgent::move(repast::SharedDiscreteSpace<RepastHPCAgent, repast::Wr
 	int modY = 0;
 	if (directionTop()) modY = 1;
     	else modY = -1;
-		do{
-       		if (repast::Random::instance()->nextDouble() < getDrifting()) {
-           		if (repast::Random::instance()->nextDouble() < 0.5) modX = (int)getSpeed() * 1;
-           		else modX = (int)getSpeed() * -1;
-       		}	
 
-    		std::vector<int> agentNewLoct;
-    		agentNewLoct.push_back(agentLoc[0] + modX);
-    		agentNewLoct.push_back(agentLoc[1] + modY);
-			agentNewLoc = agentNewLoct;
 
-			i++;
-			if (i >= maxPositionsToLookForward) return false; //Return without move
+	if (repast::Random::instance()->nextDouble() < getDrifting()) {
+		if (repast::Random::instance()->nextDouble() < 0.5) modX = (int)getSpeed() * 1;
+		else modX = (int)getSpeed() * -1;
+	}
 
- 		}while(!_model->checkPositionEmpty(agentNewLoc));
+	std::vector<int> agentNewLoct;
+	agentNewLoct.push_back(agentLoc[0] + modX);
+	agentNewLoct.push_back(agentLoc[1] + modY);
+	agentNewLoc = agentNewLoct;
 
+	if ((!_model->checkPositionEmpty(agentNewLoc))&&(modX==0)) { //Try to force horizontal movement
+		if (repast::Random::instance()->nextDouble() < 0.5) modX = (int)getSpeed() * 1;
+                else modX = (int)getSpeed() * -1;
+		std::vector<int> agentNewLoctt;
+        	agentNewLoctt.push_back(agentLoc[0] + modX);
+        	agentNewLoctt.push_back(agentLoc[1] + modY);
+        	agentNewLoc = agentNewLoctt;
+	}
+	
+	if (!_model->checkPositionEmpty(agentNewLoc)){
+		return false; //Return without move
+	}
+	
         if (_model->insideWorld(agentNewLoc)){
 			space->moveTo(id_,agentNewLoc);
-			return false;
+			return false; //Return with move
 		}
         else {
             printEncounters(); 
-            return true;
+            return true; //Return outside space-> agent disappears
         }
     }
 }
