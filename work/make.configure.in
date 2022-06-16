@@ -33,8 +33,11 @@ OPENMPI_LIB_DIR=@OPENMPI_LIB_DIR@
 
 REPAST_INC_DIR=@REPAST_INC_DIR@
 REPAST_LIB_DIR=@REPAST_LIB_DIR@
+GDAL_INC_DIR=@GDAL_INC_DIR@
+GDAL_LIB_DIR=@GDAL_LIB_DIR@
 
-REPAST_LIB=-lrepast_hpc-2.3.0
-BOOST_LIBS=-lboost_mpi-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt -lmpi -lmpi_cxx -lstdc++
+REPAST_LIB=-lrepast_hpc-2.3.1
+#BOOST_LIBS=-lboost_mpi-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt -lmpi -lmpi_cxx -lstdc++
+BOOST_LIBS=-lboost_mpi-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt -lmpi -lstdc++ -lm -lgdal
 
 REPAST_HPC_DEFINES=@REPAST_HPC_DEFINES@

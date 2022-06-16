@@ -275,10 +275,6 @@ RepastHPCModel::RepastHPCModel(std::string propsFile, int argc, char** argv, boo
 	procPerx = repast::strToInt(props->getProperty("proc.per.x"));
 	procPery = repast::strToInt(props->getProperty("proc.per.y"));
 
-	// World size props
-    WIDTH = repast::strToInt(props->getProperty("size.width"));
-    HEIGHT = repast::strToInt(props->getProperty("size.height"));
-
 	encounterRadius = repast::strToInt(props->getProperty("encounter.radious"));
 
 	// Walker props
@@ -307,20 +303,21 @@ RepastHPCModel::RepastHPCModel(std::string propsFile, int argc, char** argv, boo
 	receiver = new RepastHPCAgentPackageReceiver(&context, this);
 
 	repast::Point<double> origin(0,0);
-	repast::Point<double> extent(WIDTH, HEIGHT);    
+	repast::Point<double> extent(0,0);    
+	loadPolygon(&origin, &extent); //TODO: controlar que ha anat bé
 	repast::GridDimensions gd(origin, extent);
-    
+	WIDTH = extent[0];
+	HEIGHT = extent[1];
+
 	std::vector<int> processDims;
 	processDims.push_back(procPerx);
 	processDims.push_back(procPery); //Nº process = procPerx*procPery
 
 	for (int i = 0; i < WIDTH; i++) {
-        botLimit.push_back(repast::Point<int>(i,0));
-        topLimit.push_back(repast::Point<int>(i,HEIGHT - 1));
+        botLimit.push_back(repast::Point<int>(origin[0]+i,origin[1]));
+        topLimit.push_back(repast::Point<int>(origin[0]+i,origin[1]+extent[1] - 1));
     }
     
-	//TODO JJ: D'on surt aquest buffer de 10 posar?
-	//TODO AMV: amb un mon de 10x100 efectivament no te sentit un buffer de 10
 	discreteSpace = new repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >("AgentDiscreteSpace", gd, processDims, 2, comm);
 	
 	std::cout << "RANK " << repast::RepastProcess::instance()->rank() << " BOUNDS: " << discreteSpace->bounds().origin() << " " << discreteSpace->bounds().extents() << std::endl;
@@ -428,6 +425,7 @@ void RepastHPCModel::init(){
 
         RepastHPCAgent* agent = new RepastHPCAgent(this, id, _stopping, _stopTime, 0, repast::RepastProcess::instance()->getScheduleRunner().currentTick(), _drifting, _speed, _directionTop, 0, -1, 0, repast::RepastProcess::instance()->getScheduleRunner().currentTick(), infectiousness, encounterRadius, _sick, _infected, 0, phoneThreshold1, phoneThreshold2, _hasApp, signalRadius); //stopCounter=0, entryTime= tick, countInfected=0, infectionTime = -1, phoneActiveCount=0, timeSpentWithOthers = 0
 
+
 		context.addAgent(agent);
 		discreteSpace->moveTo(id, initialLocation);
 		countOfAgents++;
@@ -484,14 +482,14 @@ void RepastHPCModel::doSomething(){
 	std::vector<RepastHPCAgent*> agents;
 	context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, agents);
 
+
 	// Infect
 	std::vector<RepastHPCAgent*>::iterator it = agents.begin();
 	while(it != agents.end()){
-        	//std::cout << "Agent that tries to infect: " << (*it)->getId() << std::endl;
+        	std::cout << "Agent that tries to infect: " << (*it)->getId() << std::endl;
 		(*it)->infect(&context, discreteSpace);
 		it++;
 	}
-
 
 
 	// Move
@@ -699,11 +697,11 @@ void RepastHPCModel::recordResults(){
  * returns: true if location is inside the world
  */
 bool RepastHPCModel::insideWorld(std::vector<int> agentLoc){
-	if ( agentLoc[0] < 0 ) return false;
-	if ( agentLoc[0] > WIDTH ) return false;
-	if ( agentLoc[1] < 0 ) return false;
-	if ( agentLoc[1] > HEIGHT ) return false;
-	return true;
+	OGRPoint p1 = OGRPoint(agentLoc[0],agentLoc[1]);
+
+	bool ret = p1.Within(&Polygon);
+
+	return ret;
 }
 
 /*
@@ -722,4 +720,80 @@ bool RepastHPCModel::checkPositionEmpty(repast::Point<int> agentLoc){
 	if (discreteSpace->getObjectAt(agentLoc) == NULL) return true;
 	else return false;
 }
+
+
+/*
+ *    Class: RepastHPCModel
+ * Function: loadPolygon
+ * --------------------
+ * Load Polygon geometry
+ * 
+ *
+ * returns: true it there is a GIS polygon
+ */
+
+bool RepastHPCModel::loadPolygon(repast::Point<double> *origin, repast::Point<double> *extent){ 
+
+	GDALAllRegister();
+
+	//TODO: Pendent que el nom del fitxer GIS sigui un paràmetre
+	GDALDatasetUniquePtr poDS(GDALDataset::Open( "capaUTM.shp", GDAL_OF_VECTOR));
+	if( poDS == nullptr ){
+		printf( "Open failed.\n" );
+		exit( 1 );
+	}
+
+	//Look for the first polygon in layers
+	//TODO: look for a polygon with specific ID?. And this ID should be a parameter?
+	for( const OGRLayer* poLayer: poDS->GetLayers()) {
+		//printf( "Layer loop.\n" );
+		for( const auto& poFeature: *poLayer ){
+			//printf( "Feature loop.\n" );
+			OGRGeometry *poGeometry;
+			poGeometry = poFeature->GetGeometryRef();
+			if( poGeometry != NULL && wkbFlatten(poGeometry->getGeometryType()) == wkbPolygon ){
+				poPolygon = poGeometry->toPolygon();
+				Polygon = *poPolygon;//To save object
+
+				repast::Point<double> end((*origin)[0]+(*extent)[0],(*origin)[1]+(*extent)[1]);
+
+				//https://stackoverflow.com/questions/18747370/how-to-extract-vertexes-of-geometries-in-esri-shapefiles-using-ogr-library-with	
+				OGRPoint ptTemp;
+				OGRLinearRing *poExteriorRing = poPolygon ->getExteriorRing();
+           			int NumberOfExteriorRingVertices = poExteriorRing ->getNumPoints();
+				for ( int k = 0; k < NumberOfExteriorRingVertices; k++ ){
+					poExteriorRing ->getPoint(k,&ptTemp);
+					if (k == 0){
+						(*origin)[0] = ptTemp.getX();
+						(*origin)[1] = ptTemp.getY();
+						end[0] = ptTemp.getX();
+						end[1] = ptTemp.getY();
+					}
+					else{
+						if (((*origin)[0]*(*origin)[0]+(*origin)[1]*(*origin)[1])>(ptTemp.getX()*ptTemp.getX()+ptTemp.getY()*ptTemp.getY())){ 
+							(*origin)[0] = ptTemp.getX();
+							(*origin)[1] = ptTemp.getY();
+						}
+						if ((end[0]*end[0]+end[1]*end[1])<(ptTemp.getX()*ptTemp.getX()+ptTemp.getY()*ptTemp.getY())){ 
+							end[0] = ptTemp.getX();
+							end[1] = ptTemp.getY();
+						}
+
+					}
+					
+				}
+				(*extent)[0] = end[0]-(*origin)[0];
+				(*extent)[1] = end[1]-(*origin)[1];
+
+				return true;
+				}
+			else{
+                                printf( "no Polygon geometry\n" );
+				return false;
+                        }
+		}
+
+	}
+}
+
 

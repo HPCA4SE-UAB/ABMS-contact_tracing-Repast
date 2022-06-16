@@ -51,7 +51,7 @@ RepastHPC_Model_Compilation: clean_compiled_files
 	$(MPICXX) $(REPAST_HPC_DEFINES) $(CXXFLAGS) -I./include -c ./src/Model.cpp -o ./objects/Model.o
 	$(MPICXX) $(REPAST_HPC_DEFINES) $(CXXFLAGS) -I./include -c ./src/Agent.cpp -o ./objects/Agent.o
 	$(MPICXX) $(REPAST_HPC_DEFINES) $(CXXFLAGS) -I./include -c ./src/Phone.cpp -o ./objects/Phone.o
-	$(MPICXX) $(LDFLAGS) -o ./bin/Model.exe  ./objects/Main.o ./objects/Model.o ./objects/Agent.o ./objects/Phone.o $(REPAST_LIB) $(BOOST_LIBS) $(FFTW3_LIB)
+	$(MPICXX) $(LDFLAGS) -o ./bin/Model.exe  ./objects/Main.o ./objects/Model.o ./objects/Agent.o ./objects/Phone.o $(REPAST_LIB) $(BOOST_LIBS) $(FFTW3_LIB) 
 
 
 

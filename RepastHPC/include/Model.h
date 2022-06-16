@@ -36,6 +36,8 @@
 #include "repast_hpc/SharedDiscreteSpace.h"
 #include "repast_hpc/GridComponents.h"
 
+#include "ogrsf_frmts.h"
+
 #include "Agent.h"
 
 #include <string>
@@ -116,6 +118,8 @@ class RepastHPCModel{
 	// World size props
 	int WIDTH;
 	int HEIGHT;
+	OGRPolygon *poPolygon;
+	OGRPolygon Polygon;
 
 	// Walker props
 	int walkerRate;
@@ -164,6 +168,7 @@ public:
 	void recordResults();
 	bool insideWorld(std::vector<int> agentNewLoc);
 	bool checkPositionEmpty(repast::Point<int> agentNewLoc);
+	bool loadPolygon(repast::Point<double> *origin, repast::Point<double> *extent);
 };
 
 

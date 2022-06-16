@@ -757,7 +757,6 @@ void RepastHPCAgent::infect(repast::SharedContext<RepastHPCAgent>* context,
 bool RepastHPCAgent::move(repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space){
 	std::vector<int> agentLoc;
 	std::vector<int> agentNewLoc;
-    
 	if (getStopCounter() > 0){ //I amb stoped
 		setStopCount(getStopCounter() - 1);
 		return false;

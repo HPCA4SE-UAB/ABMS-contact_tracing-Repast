@@ -19,7 +19,7 @@ Walker.drifting = 0.09
 Walker.stopping = 0.02 
 Walker.stopTime = 900 
 Walker.speed = 1 
-Walker.initialDensity = 0.10
+Walker.initialDensity = 0.001
 
 Epidemiology.infectiousness = 0.00371 
 Epidemiology.infectoinRadius = 2 

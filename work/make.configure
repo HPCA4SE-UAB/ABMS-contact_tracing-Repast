@@ -5,18 +5,18 @@ SHELL=/bin/sh
 PREFIX=.
 ARCH=@ARCH@
 ARC=@ARCH@
-LDFLAGS=-L/opt/cray/pe/mpt/7.7.14/gni/mpich-gnu/8.1/lib/ -L/cfs/nobackup/c/cesaar/sfw/lib/ -L/pdc/vol/boost/1.71.0-gcc-8.3.0/lib/ -L/cfs/nobackup/c/cesaar/sfw/lib/  -g 
-CXXFLAGS=-I/cfs/nobackup/c/cesaar/sfw/include/ -I/pdc/vol/boost/1.71.0-gcc-8.3.0/include/ -I/cfs/nobackup/c/cesaar/sfw/include/ -g
+LDFLAGS=-L/lex/nfsshare/packages/openmpi/3.0.4/lib/ -L/lex/shared/projects/agent-base-modeling/sfw/repast_hpc-2.3.1/lib/ -L/lex/shared/projects/agent-base-modeling/sfw/boost-1_61_0/lib/ -L/lex/shared/projects/agent-base-modeling/sfw/gdal/lib/ 
+CXXFLAGS=-I/lex/shared/projects/agent-base-modeling/sfw/repast_hpc-2.3.1/include/ -I/lex/shared/projects/agent-base-modeling/sfw/boost-1_61_0/include/ -I/lex/shared/projects/agent-base-modeling/sfw/gdal/include/ -g -O2 -fpermissive
 
 # Destinations for library and executable installation (relative to src directory)
-GCC=cc
-GXX=CC
+GCC=gcc
+GXX=g++
 
 LIBRARY_DEST=./lib
 PROGRAMS_DEST=./bin
 
 #MPICXX=tau_cxx.sh -std=c++11
-MPICXX=CC -std=c++11
+MPICXX=mpicc -std=c++11
 MAKE=make
 LINKER=ld
 MV=mv
@@ -27,14 +27,18 @@ MKDIR=mkdir -p
 #********************************************************
 # configuration and dependencies                *
 #********************************************************
-BOOST_INC_DIR=/pdc/vol/boost/1.71.0-gcc-8.3.0/include/
-BOOST_LIB_DIR=/pdc/vol/boost/1.71.0-gcc-8.3.0/lib/
-OPENMPI_LIB_DIR=/opt/cray/pe/mpt/7.7.14/gni/mpich-gnu/8.1/lib/
+BOOST_INC_DIR=/lex/shared/projects/agent-base-modeling/sfw/boost-1_61_0/include/
+BOOST_LIB_DIR=/lex/shared/projects/agent-base-modeling/sfw/boost-1_61_0/lib/
+OPENMPI_LIB_DIR=/lex/nfsshare/packages/openmpi/3.0.4/lib/
 
-REPAST_INC_DIR=/cfs/nobackup/c/cesaar/sfw/include/
-REPAST_LIB_DIR=/cfs/nobackup/c/cesaar/sfw/lib/
+REPAST_INC_DIR=/lex/shared/projects/agent-base-modeling/sfw/repast_hpc-2.3.1/include/
+REPAST_LIB_DIR=/lex/shared/projects/agent-base-modeling/sfw/repast_hpc-2.3.1/lib/
 
-REPAST_LIB=-lrepast_hpc-2.3.0
-BOOST_LIBS=-lboost_mpi -lboost_serialization -lboost_system -lboost_filesystem -lmpich -lmpichcxx -lstdc++
+GDAL_INC_DIR=/lex/shared/projects/agent-base-modeling/sfw/gdal/include/
+GDAL_LIB_DIR=/lex/shared/projects/agent-base-modeling/sfw/gdal/lib/
+
+REPAST_LIB=-lrepast_hpc-2.3.1
+#BOOST_LIBS=-lboost_mpi-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt -lmpi -lmpi_cxx -lstdc++
+BOOST_LIBS=-lboost_mpi-mt -lboost_serialization-mt -lboost_system-mt -lboost_filesystem-mt -lmpi -lstdc++ -lm -lgdal -lnetcdf
 
 REPAST_HPC_DEFINES=
