@@ -306,15 +306,16 @@ RepastHPCModel::RepastHPCModel(std::string propsFile, int argc, char** argv, boo
 	repast::Point<double> extent(0,0);    
 	loadPolygon(&origin, &extent); //TODO: controlar que ha anat bé
 	repast::GridDimensions gd(origin, extent);
-	WIDTH = extent[0];
-	HEIGHT = extent[1];
+	WIDTH = origin[0]+extent[0];
+	HEIGHT = origin[1]+extent[1];
 
 	std::vector<int> processDims;
 	processDims.push_back(procPerx);
 	processDims.push_back(procPery); //Nº process = procPerx*procPery
 
+	//TODO: This part only works with top and botton regions parallel to X axe
 	for (int i = 0; i < WIDTH; i++) {
-        botLimit.push_back(repast::Point<int>(origin[0]+i,origin[1]));
+        botLimit.push_back(repast::Point<int>(origin[0]+i,origin[1] + 1));
         topLimit.push_back(repast::Point<int>(origin[0]+i,origin[1]+extent[1] - 1));
     }
     
@@ -486,7 +487,7 @@ void RepastHPCModel::doSomething(){
 	// Infect
 	std::vector<RepastHPCAgent*>::iterator it = agents.begin();
 	while(it != agents.end()){
-        	std::cout << "Agent that tries to infect: " << (*it)->getId() << std::endl;
+        	//std::cout << "Agent that tries to infect: " << (*it)->getId() << std::endl;
 		(*it)->infect(&context, discreteSpace);
 		it++;
 	}
@@ -508,7 +509,12 @@ void RepastHPCModel::doSomething(){
 
 
 	// New agents
-	float stepRatioCreationAgents = (2.0*procPerx/(WIDTH*initialDensity));
+	float xmin = discreteSpace->dimensions().origin().getX();
+	float ymin = discreteSpace->dimensions().origin().getY();
+	float xmax = discreteSpace->dimensions().origin().getX() + discreteSpace->dimensions().extents().getX();
+	float ymax = discreteSpace->dimensions().origin().getY() + discreteSpace->dimensions().extents().getY();
+	
+	float stepRatioCreationAgents = (2.0*procPerx/((xmax-xmin)*initialDensity));
 
 	agentsToAdd = 0;
 	if (stepRatioCreationAgents >= 1){
@@ -518,14 +524,10 @@ void RepastHPCModel::doSomething(){
 		agentsToAdd = 1/stepRatioCreationAgents;
 	}
 
-	float xmin = discreteSpace->dimensions().origin().getX();
-	float ymin = discreteSpace->dimensions().origin().getY();
-	float xmax = discreteSpace->dimensions().origin().getX() + discreteSpace->dimensions().extents().getX();
-	float ymax = discreteSpace->dimensions().origin().getY() + discreteSpace->dimensions().extents().getY();
 
 
 	//Are we TOP?
-	if ((agentsToAdd > 0) && (ymax == HEIGHT)){
+	if ((agentsToAdd > 0) && (ymax == (HEIGHT + 1))){
 		for (int i = 0; i < agentsToAdd; i++){
 			bool _sick = false;
 			if (repast::Random::instance()->nextDouble() < sickRate) _sick = true;
@@ -542,14 +544,14 @@ void RepastHPCModel::doSomething(){
 			repast::Point<int> initialLocation(0,0);
 
 			j = 0;
-			int randIndex = xmin + repast::Random::instance()->nextDouble() * (xmax - xmin) - 1;
+			int randIndex = xmin - discreteSpace->bounds().origin().getX() + repast::Random::instance()->nextDouble() * (xmax - xmin) - 1;
 			while (not checkPositionEmpty(topLimit[randIndex])){
 				randIndex = xmin + repast::Random::instance()->nextDouble() * (xmax - xmin) - 1;
 				if (j >= maxPositionsToLookForward) break;
 				j++;
 			}
 
-			if (j >= maxPositionsToLookForward) continue;
+			if (j > maxPositionsToLookForward) continue;
 
 			initialLocation = topLimit[randIndex];
 
@@ -559,9 +561,11 @@ void RepastHPCModel::doSomething(){
 			RepastHPCAgent* agent = new RepastHPCAgent(this, id, _stopping, _stopTime, 0, repast::RepastProcess::instance()->getScheduleRunner().currentTick(), _drifting, _speed, _directionTop, 0, -1, 0, repast::RepastProcess::instance()->getScheduleRunner().currentTick(), infectiousness, encounterRadius, _sick, _infected, 0, phoneThreshold1, phoneThreshold2, _hasApp, signalRadius); //stopCounter=0, entryTime= tick, countInfected=0, infectionTime = -1, phoneActiveCount=0, timeSpentWithOthers = 0
 
 			context.addAgent(agent);
-			//TODO JJ: Aquest necessita ser un punt creat
+			//TODO AMV: Quan s'afegeix un agent fora de la regió assignada, peta després en el balance
 			discreteSpace->moveTo(id, initialLocation);
 			countOfAgents++;
+cout << "AMV(" << rank << ") xmax: " << (long)xmax << " bounds().extents().getX(): " << (long)discreteSpace->bounds().extents().getX() << endl;
+cout << "AMV(" << rank << ") ymax: " << (long)ymax << " bounds().extents().getY(): " << (long)discreteSpace->bounds().extents().getY() << endl;
 
 			std::cout << "Agent to add TOP: " << id << " " << initialLocation << " TICK: " << repast::RepastProcess::instance()->getScheduleRunner().currentTick() << std::endl;
 
@@ -569,8 +573,7 @@ void RepastHPCModel::doSomething(){
 	}
 
 	//Are we BOTTON?
-	if ((agentsToAdd > 0) && (ymin == 0)){
-
+	if ((agentsToAdd > 0) && (round(ymin) == round(discreteSpace->bounds().origin().getY()))){
 		for (int i = 0; i < agentsToAdd; i++){
 			bool _sick = false;
 			if (repast::Random::instance()->nextDouble() < sickRate) _sick = true;
@@ -587,14 +590,14 @@ void RepastHPCModel::doSomething(){
 			repast::Point<int> initialLocation(0,0);
 
 			j = 0;
-			int randIndex = xmin + repast::Random::instance()->nextDouble() * (xmax - xmin) - 1;
+			int randIndex = xmin - discreteSpace->bounds().origin().getX() + repast::Random::instance()->nextDouble() * (xmax - xmin) - 1;
 			while (not checkPositionEmpty(botLimit[randIndex])){
 				randIndex = xmin + repast::Random::instance()->nextDouble() * (xmax - xmin) - 1;
 				if (j >= maxPositionsToLookForward) break;
 				j++;
 			}
 
-			if (j >= maxPositionsToLookForward) continue;
+			if (j > maxPositionsToLookForward) continue;
 
 			initialLocation = botLimit[randIndex];
 
@@ -604,11 +607,13 @@ void RepastHPCModel::doSomething(){
 			RepastHPCAgent* agent = new RepastHPCAgent(this, id, _stopping, _stopTime, 0, repast::RepastProcess::instance()->getScheduleRunner().currentTick(), _drifting, _speed, _directionTop, 0, -1, 0, repast::RepastProcess::instance()->getScheduleRunner().currentTick(), infectiousness, encounterRadius, _sick, _infected, 0, phoneThreshold1, phoneThreshold2, _hasApp, signalRadius); //stopCounter=0, entryTime= tick, countInfected=0, infectionTime = -1, phoneActiveCount=0, timeSpentWithOthers = 0
 
 			context.addAgent(agent);
-			//TODO JJ: Aquest necessita ser un punt creat
+			//TODO AMV: Quan s'afegeix un agent fora de la regió assignada, peta després en el balance
 			discreteSpace->moveTo(id, initialLocation);
 			countOfAgents++;
+cout << "AMV(" << rank << ") xmin: " << (long)xmin << " bounds().origin().getX(): " << (long)discreteSpace->bounds().origin().getX() << endl;
+cout << "AMV(" << rank << ") ymin: " << (long)ymin << " bounds().origin().getY(): " << (long)discreteSpace->bounds().origin().getY() << endl;
 
-			std::cout << "Agent to add: " << id << " " << initialLocation << std::endl;
+			std::cout << "Agent to add BOTTON: " << id << " " << initialLocation << std::endl;
    		}
 	}
 
@@ -782,8 +787,8 @@ bool RepastHPCModel::loadPolygon(repast::Point<double> *origin, repast::Point<do
 					}
 					
 				}
-				(*extent)[0] = end[0]-(*origin)[0];
-				(*extent)[1] = end[1]-(*origin)[1];
+				(*extent)[0] = (int)(end[0]-(*origin)[0]);
+				(*extent)[1] = (int)(end[1]-(*origin)[1]);
 
 				return true;
 				}

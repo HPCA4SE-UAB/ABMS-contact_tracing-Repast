@@ -9,11 +9,6 @@ proc.per.y = 8
 #Contact_tracing_props
 encounter.radious = 2 
 
-# size.width must be multiple of proc.per.x
-# size.height must be multiple of proc.per.y
-size.width = 32 
-size.height = 1024
-
 Walker.walkerRate = 3 
 Walker.drifting = 0.09 
 Walker.stopping = 0.02 
