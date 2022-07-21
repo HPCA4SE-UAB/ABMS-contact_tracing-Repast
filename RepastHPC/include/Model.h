@@ -155,7 +155,7 @@ class RepastHPCModel{
 	RepastHPCAgentPackageReceiver* receiver;
 
 	repast::SVDataSet* agentValues;
-    repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* discreteSpace;
+    repast::SharedDiscreteSpace<RepastHPCAgent, repast::StrictBorders, repast::SimpleAdder<RepastHPCAgent> >* discreteSpace;
 	
 public:
 	RepastHPCModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm);

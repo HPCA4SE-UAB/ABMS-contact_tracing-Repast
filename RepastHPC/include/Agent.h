@@ -118,8 +118,8 @@ public:
 	void incCountInfected();
 	void printEncounters(); 
 	void getInfected();  
-	void countEncountersReal(repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space);
-	void countEncountersRecorded(repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space);
+	void countEncountersReal(repast::SharedDiscreteSpace<RepastHPCAgent, repast::StrictBorders, repast::SimpleAdder<RepastHPCAgent> >* space);
+	void countEncountersRecorded(repast::SharedDiscreteSpace<RepastHPCAgent, repast::StrictBorders, repast::SimpleAdder<RepastHPCAgent> >* space);
 	bool phoneBroadcast();
 	/*Others functions*/	
     double frand();
@@ -127,8 +127,8 @@ public:
 
     /* Actions */
     void infect(repast::SharedContext<RepastHPCAgent>* context,
-              repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space);
-    bool move(repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space);
+              repast::SharedDiscreteSpace<RepastHPCAgent, repast::StrictBorders, repast::SimpleAdder<RepastHPCAgent> >* space);
+    bool move(repast::SharedDiscreteSpace<RepastHPCAgent, repast::StrictBorders, repast::SimpleAdder<RepastHPCAgent> >* space);
     
 };
 

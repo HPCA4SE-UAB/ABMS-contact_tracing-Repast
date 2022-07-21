@@ -321,7 +321,7 @@ RepastHPCModel::RepastHPCModel(std::string propsFile, int argc, char** argv, boo
         topLimit.push_back(repast::Point<int>(origin[0]+i,origin[1]+extent[1] - 1));
     }
     
-	discreteSpace = new repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >("AgentDiscreteSpace", gd, processDims, 2, comm);
+	discreteSpace = new repast::SharedDiscreteSpace<RepastHPCAgent, repast::StrictBorders, repast::SimpleAdder<RepastHPCAgent> >("AgentDiscreteSpace", gd, processDims, 2, comm);
 	
 	std::cout << "RANK " << repast::RepastProcess::instance()->rank() << " BOUNDS: " << discreteSpace->bounds().origin() << " " << discreteSpace->bounds().extents() << std::endl;
     
@@ -788,8 +788,11 @@ bool RepastHPCModel::loadPolygon(repast::Point<double> *origin, repast::Point<do
 					}
 					
 				}
-				(*extent)[0] = (int)(end[0]-(*origin)[0]);
-				(*extent)[1] = (int)(end[1]-(*origin)[1]);
+				(*extent)[0] = (int)(end[0]-(*origin)[0]) + 10;
+				(*extent)[1] = (int)(end[1]-(*origin)[1]) + 10;
+
+				(*origin)[0] = (*origin)[0] - 5; 
+				(*origin)[1] = (*origin)[1] - 5; 
 
 				return true;
 				}

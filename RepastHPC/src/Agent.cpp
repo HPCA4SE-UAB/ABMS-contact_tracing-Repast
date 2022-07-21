@@ -539,7 +539,7 @@ void RepastHPCAgent::printEncounters() {
  *
  * returns: 
  */
-void RepastHPCAgent::countEncountersReal(repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space) {
+void RepastHPCAgent::countEncountersReal(repast::SharedDiscreteSpace<RepastHPCAgent, repast::StrictBorders, repast::SimpleAdder<RepastHPCAgent> >* space) {
 
 	std::vector<RepastHPCAgent*> agentsEncounter;
 	std::vector<int> agentLoc;
@@ -591,7 +591,7 @@ void RepastHPCAgent::countEncountersReal(repast::SharedDiscreteSpace<RepastHPCAg
  * returns: 
  */
 
-void RepastHPCAgent::countEncountersRecorded(repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space) {
+void RepastHPCAgent::countEncountersRecorded(repast::SharedDiscreteSpace<RepastHPCAgent, repast::StrictBorders, repast::SimpleAdder<RepastHPCAgent> >* space) {
 	if (phoneBroadcast()) { 
         	std::vector<RepastHPCAgent*> agentsEncounter;
         	std::vector<int> agentLoc;
@@ -705,7 +705,7 @@ bool RepastHPCAgent::isIntoCircle(int x, int y, int xCircle, int yCircle, int rC
  * returns: 
  */
 void RepastHPCAgent::infect(repast::SharedContext<RepastHPCAgent>* context,
-                              repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space){
+                              repast::SharedDiscreteSpace<RepastHPCAgent, repast::StrictBorders, repast::SimpleAdder<RepastHPCAgent> >* space){
 
 	if (!isSick()) return;
 
@@ -754,7 +754,7 @@ void RepastHPCAgent::infect(repast::SharedContext<RepastHPCAgent>* context,
  *
  * returns: true: die 
  */
-bool RepastHPCAgent::move(repast::SharedDiscreteSpace<RepastHPCAgent, repast::WrapAroundBorders, repast::SimpleAdder<RepastHPCAgent> >* space){
+bool RepastHPCAgent::move(repast::SharedDiscreteSpace<RepastHPCAgent, repast::StrictBorders, repast::SimpleAdder<RepastHPCAgent> >* space){
 	std::vector<int> agentLoc;
 	std::vector<int> agentNewLoc;
 	if (getStopCounter() > 0){ //I amb stoped
@@ -796,7 +796,7 @@ bool RepastHPCAgent::move(repast::SharedDiscreteSpace<RepastHPCAgent, repast::Wr
 	if (!_model->checkPositionEmpty(agentNewLoc)){
 		return false; //Return without move
 	}
-	
+
         if (_model->insideWorld(agentNewLoc)){
 			space->moveTo(id_,agentNewLoc);
 			return false; //Return with move
