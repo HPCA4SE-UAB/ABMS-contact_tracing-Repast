@@ -277,6 +277,8 @@ RepastHPCModel::RepastHPCModel(std::string propsFile, int argc, char** argv, boo
 
 	encounterRadius = repast::strToInt(props->getProperty("encounter.radious"));
 
+	initialGISFile = props->getProperty("initial.GIS.file");
+
 	// Walker props
 	walkerRate = repast::strToInt(props->getProperty("Walker.walkerRate"));
 	drifting = (double) repast::strToDouble(props->getProperty("Walker.drifting"));
@@ -741,8 +743,7 @@ bool RepastHPCModel::loadPolygon(repast::Point<double> *origin, repast::Point<do
 
 	GDALAllRegister();
 
-	//TODO: Pendent que el nom del fitxer GIS sigui un paràmetre
-	GDALDatasetUniquePtr poDS(GDALDataset::Open( "capaUTM.shp", GDAL_OF_VECTOR));
+	GDALDatasetUniquePtr poDS(GDALDataset::Open(initialGISFile.c_str(), GDAL_OF_VECTOR));
 	if( poDS == nullptr ){
 		printf( "Open failed.\n" );
 		exit( 1 );

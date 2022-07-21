@@ -1,6 +1,7 @@
 #Properties file 
 stop.at = 3600
 random.seed = 1
+initial.GIS.file = props/capaUTM.shp
 
 # these must multiply to total number of processes
 proc.per.x = 8

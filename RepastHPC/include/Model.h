@@ -114,6 +114,8 @@ class RepastHPCModel{
 	int procPerx;
 	int procPery;
 	int agentsToAdd;
+
+	std::string initialGISFile;
 	
 	// World size props
 	int WIDTH;
