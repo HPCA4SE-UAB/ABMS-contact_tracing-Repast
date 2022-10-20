@@ -317,8 +317,8 @@ RepastHPCModel::RepastHPCModel(std::string propsFile, int argc, char** argv, boo
 
 	//TODO: This part only works with top and botton regions parallel to X axe
 	for (int i = 0; i < WIDTH; i++) {
-        botLimit.push_back(repast::Point<int>(origin[0]+i,origin[1] + 1));
-        topLimit.push_back(repast::Point<int>(origin[0]+i,origin[1]+extent[1] - 1));
+        botLimit.push_back(repast::Point<int>(origin[0]+i,origin[1] + 5));
+        topLimit.push_back(repast::Point<int>(origin[0]+i,origin[1]+extent[1] - 5));
     }
     
 	discreteSpace = new repast::SharedDiscreteSpace<RepastHPCAgent, repast::StrictBorders, repast::SimpleAdder<RepastHPCAgent> >("AgentDiscreteSpace", gd, processDims, 2, comm);
@@ -485,6 +485,8 @@ void RepastHPCModel::doSomething(){
 	std::vector<RepastHPCAgent*> agents;
 	context.selectAgents(repast::SharedContext<RepastHPCAgent>::LOCAL, agents);
 
+std::cout << "# Agents in rank " << rank << " : " << agents.size() << std::endl;
+	if (agents.size() == 0) return;
 
 	// Infect
 	std::vector<RepastHPCAgent*>::iterator it = agents.begin();
@@ -793,7 +795,7 @@ bool RepastHPCModel::loadPolygon(repast::Point<double> *origin, repast::Point<do
 
 				(*origin)[0] = (*origin)[0] - 5; 
 				(*origin)[1] = (*origin)[1] - 5; 
-
+				
 				return true;
 				}
 			else{
